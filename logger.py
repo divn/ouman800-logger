@@ -23,23 +23,22 @@ while True:
     try:
         # Fetch wanted temperatures from OUMAN,
         temp = requests.get('http://' + ip + '/request?' + ';'.join(measures), timeout=1)
-        #timenow = time.strftime("%m/%d/%Y %H:%M:%S")
         timenow = time.strftime('%Y-%m-%d %H:%M:%S')
         data = temp.text
 
-        #Data starts with request? strip it from string
+        # Data starts with request? strip it from string
         if data.startswith('request?'):
             data = data[8:-4]
 
-        #Convert String into list 
+        # Convert String into list 
         data = data.split(';')
 
+        # Store values that will be send to database
         data_values = (timenow, float(data[0][9:]), float(data[1][9:]),
                        float(data[2][9:]), float(data[3][9:]))
 
         #Print value and equilevant name
         print('=' * 10 + timenow + '=' * 10)
-
         for name,data in zip(names,data):
             print('{:20}'.format(name) + ' ' + data[9:])
 
@@ -49,6 +48,7 @@ while True:
     except:
         print('OUMAN ERROR')
 
+    # Database connection and inserting values
     try:
         connection = mysql.connector.connect(**dbconfig)
         cursor = connection.cursor()
@@ -63,8 +63,10 @@ while True:
         cursor.close()
         connection.close()
         print('DATABASE OK!')
+
     except:
         print('DATABASE ERROR')
 
+    # Sleep for Seconds start over
     time.sleep(30)
-    os.system('clear')
+    os.system('cls||clear')
