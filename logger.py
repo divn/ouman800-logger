@@ -1,7 +1,7 @@
 import requests
 import time
 import os
-import mysql.connector 
+import mysql.connector
 
 # Database config
 dbconfig = {
@@ -15,14 +15,16 @@ dbconfig = {
 # Ip and port of OUMAN EH800, CHANGE THIS
 ip = '127.0.0.1'
 # Wanted measurepoints. More from sourcecode of OUMANEH800 webinterface
-measures = ['S_272_85','S_261_85','S_259_85','S_227_85']
+measures = ['S_272_85', 'S_261_85', 'S_259_85', 'S_227_85']
 # Measurepoint names handwritten in right order
-names = ['Venttiilin asento','Sisälämpötila','Menoveden Lämpötila','Ulkolämpötila']
+names = ['Venttiilin asento', 'Sisälämpötila', 'Menoveden Lämpötila',
+         'Ulkolämpötila']
 
 while True:
     try:
         # Fetch wanted temperatures from OUMAN,
-        temp = requests.get('http://' + ip + '/request?' + ';'.join(measures), timeout=1)
+        temp = requests.get('http://' + ip + '/request?' + ';'.join(measures),
+                            timeout=1)
         timenow = time.strftime('%Y-%m-%d %H:%M:%S')
         data = temp.text
 
@@ -30,22 +32,22 @@ while True:
         if data.startswith('request?'):
             data = data[8:-4]
 
-        # Convert String into list 
+        # Convert String into list
         data = data.split(';')
 
         # Store values that will be send to database
         data_values = (timenow, float(data[0][9:]), float(data[1][9:]),
                        float(data[2][9:]), float(data[3][9:]))
 
-        #Print value and equilevant name
+        # Print value and equilevant name
         print('=' * 10 + timenow + '=' * 10)
-        for name,data in zip(names,data):
+        for name, data in zip(names, data):
             print('{:20}'.format(name) + ' ' + data[9:])
 
         print('OUMAN OK!')
 
     # if theres no connection to OUMAN print this error msg
-    except:
+    except requests.exceptions.RequestException:
         print('OUMAN ERROR')
 
     # Database connection and inserting values
@@ -64,7 +66,7 @@ while True:
         connection.close()
         print('DATABASE OK!')
 
-    except:
+    except mysql.connector.Error:
         print('DATABASE ERROR')
 
     # Sleep for Seconds start over
