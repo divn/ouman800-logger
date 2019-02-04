@@ -2,18 +2,13 @@ import requests
 import time
 import os
 import mysql.connector
+import config
 
 # Database config
-dbconfig = {
-    'user': 'test',
-    'password': 'testpassword',
-    'host': 'test.com',
-    'database': 'testdb',
-    'raise_on_warnings': True
-}
+dbconfig = config.DBCONFIG
 
 # Ip and port of OUMAN EH800, CHANGE THIS
-ip = '127.0.0.1'
+ip = config.OUMANIP
 # Wanted measurepoints. More from sourcecode of OUMANEH800 webinterface
 measures = ['S_272_85', 'S_261_85', 'S_259_85', 'S_227_85']
 # Measurepoint names handwritten in right order
